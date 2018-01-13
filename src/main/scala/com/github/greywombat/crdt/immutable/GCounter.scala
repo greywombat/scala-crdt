@@ -2,7 +2,7 @@ package com.github.greywombat.crdt.immutable
 
 import com.github.greywombat.crdt.NodeId
 
-case class GCounterOp(inc: Int)
+case class GCounterOp(inc: Int, node: NodeId)
 
 object GCounter extends ImmutableCRDTInit[Int, GCounterOp, Map[NodeId, Int]] {
   def apply(count: Int)(implicit nodeId: NodeId) = new GCounter(Map(nodeId -> math.max(0, count)))
@@ -19,8 +19,8 @@ object GCounter extends ImmutableCRDTInit[Int, GCounterOp, Map[NodeId, Int]] {
   * @param state
   */
 class GCounter(val state: Map[NodeId, Int]) extends ImmutableCRDT[Int, GCounterOp, Map[NodeId, Int]] {
-  override def update(op: GCounterOp)(implicit node: NodeId) =
-    new GCounter(state + ((node, state.getOrElse(node, 0) + op.inc)))
+  override def update(op: GCounterOp) =
+    new GCounter(state + ((op.node, state.getOrElse(op.node, 0) + op.inc)))
 
 
   override def get: Int = state.values.sum
@@ -34,7 +34,7 @@ class GCounter(val state: Map[NodeId, Int]) extends ImmutableCRDT[Int, GCounterO
     * @param nodeId This process identifier.
     * @return A new GCounter instance.
     */
-  def inc(implicit nodeId: NodeId) = update(GCounterOp(1))(nodeId)
+  def inc(implicit nodeId: NodeId) = update(GCounterOp(1, nodeId))
 
   /**
     * Increment the counter by inc.
@@ -43,5 +43,5 @@ class GCounter(val state: Map[NodeId, Int]) extends ImmutableCRDT[Int, GCounterO
     * @param nodeId This process identifier.
     * @return A new GCounter instance.
     */
-  def +(inc: Int)(implicit nodeId: NodeId) = update(GCounterOp(math.max(0, inc)))(nodeId)
+  def +(inc: Int)(implicit nodeId: NodeId) = update(GCounterOp(math.max(0, inc), nodeId))
 }

@@ -22,8 +22,8 @@ object MVRegister {
   */
 class MVRegister[T](val state: Set[MVRegisterOp[T]]) extends ImmutableCRDT[Set[T], MVRegisterOp[T], Set[MVRegisterOp[T]]] {
 
-  override def update(op: MVRegisterOp[T])(implicit node: NodeId) =
-    new MVRegister[T](state.filter(_.version < op.version) + op)
+  override def update(op: MVRegisterOp[T]) =
+    new MVRegister[T](state.filterNot(_.version < op.version) + op)
 
   override def get: Set[T] = state.map(_.value)
 
@@ -33,5 +33,5 @@ class MVRegister[T](val state: Set[MVRegisterOp[T]]) extends ImmutableCRDT[Set[T
   def set(value: T)(implicit node: NodeId) =
     update(new MVRegisterOp(maxVersion.inc(node), value))
 
-  private val maxVersion = state.map(_.version).foldLeft(VectorClock.empty)(VectorClock.join)
+  val maxVersion = state.map(_.version).foldLeft(VectorClock.empty)(VectorClock.join)
 }

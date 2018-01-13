@@ -17,6 +17,10 @@ publishMavenStyle := true
 libraryDependencies ++= Seq(
   "io.monix" %% "monix" % "2.3.0",
   "org.typelevel" %% "algebra" % "0.6.0",
-  "org.scalatest" %% "scalatest" % "3.0.4" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
   "com.github.alexarchambault" %% "scalacheck-shapeless_1.13" % "1.1.6" % "test")
+
+logBuffered in (Test,test) := false
+
+testListeners in (Test,test) := Nil

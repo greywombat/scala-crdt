@@ -43,5 +43,14 @@ class MVRegisterSpec extends WordSpec {
         assert((MVRegister.empty[Int].set(10)).get == Set(10))
       }
     }
+    "holding concurrent values" should {
+      val reg = MVRegister.empty[Int].set(1)(NodeId("node1")).update(MVRegisterOp(VectorClock(Map(NodeId("node2") -> BigInt(1))), 2))
+      "yield multiple values" in {
+        assert(reg.get.size == 2)
+      }
+      "allow to overwrite values" in {
+        assert((reg.set(10)(NodeId("node1")).get == Set(10)))
+      }
+    }
   }
 }

@@ -14,7 +14,7 @@ import com.github.greywombat.crdt.NodeId
 trait ImmutableCRDT[+T, OpT, StateT] {
   def state: StateT
 
-  def update(input: OpT)(implicit node: NodeId): ImmutableCRDT[T, OpT, StateT]
+  def update(input: OpT): ImmutableCRDT[T, OpT, StateT]
 
   def get: T
 

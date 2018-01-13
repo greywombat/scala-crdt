@@ -16,11 +16,11 @@ class PNCounterProps extends OpCRDTProps[Int, PNCounterOp, (Map[NodeId, Int], Ma
   import Helpers._
 
   property("random interleaving of operation sequences yields equal result") {
-    forAll { opSeq: List[(NodeId, List[PNCounterOp])] =>
+    forAll { opSeq: List[(NodeId, List[Int])] =>
       val opSeq1 = randomOpsInterleaving(opSeq)
-      val res1 = opSeq1.foldLeft(PNCounter.empty) { case (crdt, (node, op)) => crdt.update(op)(node) }
+      val res1 = opSeq1.foldLeft(PNCounter.empty) { case (crdt, (node, inc)) => crdt.update(PNCounterOp(inc, node)) }
       val opSeq2 = randomOpsInterleaving(opSeq)
-      val res2 = opSeq2.foldLeft(PNCounter.empty) { case (crdt, (node, op)) => crdt.update(op)(node) }
+      val res2 = opSeq2.foldLeft(PNCounter.empty) { case (crdt, (node, inc)) => crdt.update(PNCounterOp(inc, node)) }
       res1 should equal(res2)
     }
   }

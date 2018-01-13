@@ -2,7 +2,7 @@ package com.github.greywombat.crdt.immutable
 
 import com.github.greywombat.crdt.NodeId
 
-case class PNCounterOp(inc: Int)
+case class PNCounterOp(inc: Int, node: NodeId)
 
 object PNCounter extends ImmutableCRDTInit[Int, PNCounterOp, (Map[NodeId, Int], Map[NodeId, Int])] {
   def apply(count: Int)(implicit nodeId: NodeId) =
@@ -25,10 +25,10 @@ object PNCounter extends ImmutableCRDTInit[Int, PNCounterOp, (Map[NodeId, Int], 
 class PNCounter(pCount: Map[NodeId, Int], nCount: Map[NodeId, Int]) extends ImmutableCRDT[Int, PNCounterOp, (Map[NodeId, Int], Map[NodeId, Int])] {
   override val state = (pCount, nCount)
 
-  override def update(op: PNCounterOp)(implicit node: NodeId) =
+  override def update(op: PNCounterOp) =
     new PNCounter(
-      pCount + ((node, pCount.getOrElse(node, 0) + math.max(0, op.inc))),
-      nCount + ((node, nCount.getOrElse(node, 0) + math.min(0, op.inc))))
+      pCount + ((op.node, pCount.getOrElse(op.node, 0) + math.max(0, op.inc))),
+      nCount + ((op.node, nCount.getOrElse(op.node, 0) + math.min(0, op.inc))))
 
   override def get: Int = pCount.values.sum + nCount.values.sum
 
@@ -41,7 +41,7 @@ class PNCounter(pCount: Map[NodeId, Int], nCount: Map[NodeId, Int]) extends Immu
     * @param nodeId This process identifier.
     * @return A new GCounter instance.
     */
-  def inc(implicit nodeId: NodeId) = update(PNCounterOp(1))(nodeId)
+  def inc(implicit nodeId: NodeId) = update(PNCounterOp(1, nodeId))
 
   /**
     * Decrement the counter by one.
@@ -49,7 +49,7 @@ class PNCounter(pCount: Map[NodeId, Int], nCount: Map[NodeId, Int]) extends Immu
     * @param nodeId This process identifier.
     * @return A new GCounter instance.
     */
-  def dec(implicit nodeId: NodeId) = update(PNCounterOp(-1))(nodeId)
+  def dec(implicit nodeId: NodeId) = update(PNCounterOp(-1, nodeId))
 
   /**
     * Increment or decrement the counter by inc.
@@ -58,5 +58,5 @@ class PNCounter(pCount: Map[NodeId, Int], nCount: Map[NodeId, Int]) extends Immu
     * @param nodeId This process identifier.
     * @return A new GCounter instance.
     */
-  def +(inc: Int)(implicit nodeId: NodeId) = update(PNCounterOp(inc))(nodeId)
+  def +(inc: Int)(implicit nodeId: NodeId) = update(PNCounterOp(inc, nodeId))
 }
