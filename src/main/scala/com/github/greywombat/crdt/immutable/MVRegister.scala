@@ -20,7 +20,7 @@ object MVRegister {
   *
   * @param state
   */
-class MVRegister[T](val state: Set[MVRegisterOp[T]]) extends ImmutableCRDT[Set[T], MVRegisterOp[T], Set[MVRegisterOp[T]]] {
+case class MVRegister[T](state: Set[MVRegisterOp[T]]) extends ImmutableCRDT[Set[T], MVRegisterOp[T], Set[MVRegisterOp[T]]] {
 
   override def update(op: MVRegisterOp[T]) =
     new MVRegister[T](state.filterNot(_.version < op.version) + op)
