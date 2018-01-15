@@ -18,7 +18,7 @@ object LWWRegister {
 }
 
 /**
-  * GCounter is a "grow only" counter. That means it can only be incremented.
+  * A last writer wins register is a container for one value, that returns the latest value as determined by a Lamport clock.
   *
   * @param state
   */

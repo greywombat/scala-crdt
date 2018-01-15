@@ -15,7 +15,7 @@ object MVRegister {
 }
 
 /**
-  * GCounter is a "grow only" counter. That means it can only be incremented.
+  * A multi value register is a container for one value, that returns all concurrently (order of update cannot be determined) updates versions.
   *
   * @param state
   */
