@@ -15,6 +15,16 @@ case class VectorClock(counters: Map[NodeId, BigInt]) extends PartiallyOrdered[V
     }
 
   def merge(that: VectorClock) = VectorClock.join(this, that)
+
+  def totally = new Ordered[VectorClock] {
+    override def compare(that: VectorClock): Int = tryCompareTo(that) match {
+      case None => {
+        val node = counters.keySet.union(that.counters.keySet).toList.sorted.head
+        counters.getOrElse(node, BigInt(0)) compareTo that.counters.getOrElse(node, BigInt(0))
+      }
+      case Some(int) => int
+    }
+  }
 }
 
 object VectorClock extends BoundedJoinSemilattice[VectorClock] with PartialOrder[VectorClock] {

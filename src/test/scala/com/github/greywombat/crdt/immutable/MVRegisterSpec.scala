@@ -1,7 +1,7 @@
 package com.github.greywombat.crdt.immutable
 
 import com.github.greywombat.crdt.NodeId
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.{Arbitrary}
 import org.scalacheck.ScalacheckShapeless._
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec, WordSpec}
@@ -27,6 +27,12 @@ class MVRegisterProps extends PropSpec with GeneratorDrivenPropertyChecks with M
   property("merge operation is commutative and converges") {
     forAll { (state1: Set[MVRegisterOp[Int]], state2: Set[MVRegisterOp[Int]]) =>
       new MVRegister(state1).merge(state2) should equal(new MVRegister(state2).merge(state1))
+    }
+  }
+
+  property("merge should be idempotent") {
+    forAll { (state1: Set[MVRegisterOp[Int]], state2: Set[MVRegisterOp[Int]]) =>
+      new MVRegister(state1).merge(state2).merge(state2) should equal(new MVRegister(state1).merge(state2))
     }
   }
 }

@@ -2,8 +2,7 @@ package com.github.greywombat.crdt.immutable
 
 import com.github.greywombat.crdt.NodeId
 
-
-case class MVRegisterOp[T](val version: VectorClock, val value: T)
+case class MVRegisterOp[T](version: VectorClock, value: T)
 
 object MVRegister {
   def apply[T](value: T)(implicit nodeId: NodeId) = new MVRegister(Set(new MVRegisterOp[T](VectorClock.empty.inc(nodeId), value)))

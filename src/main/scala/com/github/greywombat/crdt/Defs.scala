@@ -7,4 +7,6 @@ package com.github.greywombat.crdt
   *
   * @param nodeId The actual node identifier.
   */
-case class NodeId(nodeId: String)
+case class NodeId(nodeId: String) extends Ordered[NodeId] {
+  override def compare(that: NodeId): Int = nodeId.compare(that.nodeId)
+}
