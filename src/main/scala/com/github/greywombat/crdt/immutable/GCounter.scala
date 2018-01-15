@@ -10,7 +10,7 @@ object GCounter extends ImmutableCRDTInit[Int, GCounterOp, Map[NodeId, Int]] {
   override def empty = new GCounter(Map.empty)
 
   override def combine(x: ImmutableCRDT[Int, GCounterOp, Map[NodeId, Int]], y: ImmutableCRDT[Int, GCounterOp, Map[NodeId, Int]]): ImmutableCRDT[Int, GCounterOp, Map[NodeId, Int]] =
-    new GCounter((x.state.toSeq ++ y.state.toSeq).groupBy(_._1).mapValues(_.map(_._2).sum))
+    new GCounter((x.state.toSeq ++ y.state.toSeq).groupBy(_._1).mapValues(_.map(_._2).max))
 }
 
 /**

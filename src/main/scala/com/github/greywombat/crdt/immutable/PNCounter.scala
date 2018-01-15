@@ -12,8 +12,8 @@ object PNCounter extends ImmutableCRDTInit[Int, PNCounterOp, (Map[NodeId, Int], 
 
   override def combine(x: ImmutableCRDT[Int, PNCounterOp, (Map[NodeId, Int], Map[NodeId, Int])], y: ImmutableCRDT[Int, PNCounterOp, (Map[NodeId, Int], Map[NodeId, Int])]): ImmutableCRDT[Int, PNCounterOp, (Map[NodeId, Int], Map[NodeId, Int])] =
     new PNCounter(
-      (x.state._1.toSeq ++ y.state._1.toSeq).groupBy(_._1).mapValues(_.map(_._2).sum),
-      (x.state._2.toSeq ++ y.state._2.toSeq).groupBy(_._1).mapValues(_.map(_._2).sum))
+      (x.state._1.toSeq ++ y.state._1.toSeq).groupBy(_._1).mapValues(_.map(_._2).max),
+      (x.state._2.toSeq ++ y.state._2.toSeq).groupBy(_._1).mapValues(_.map(_._2).max))
 }
 
 /**
@@ -22,7 +22,7 @@ object PNCounter extends ImmutableCRDTInit[Int, PNCounterOp, (Map[NodeId, Int], 
   * @param pCount
   * @param nCount
   */
-class PNCounter(pCount: Map[NodeId, Int], nCount: Map[NodeId, Int]) extends ImmutableCRDT[Int, PNCounterOp, (Map[NodeId, Int], Map[NodeId, Int])] {
+case class PNCounter(pCount: Map[NodeId, Int], nCount: Map[NodeId, Int]) extends ImmutableCRDT[Int, PNCounterOp, (Map[NodeId, Int], Map[NodeId, Int])] {
   override val state = (pCount, nCount)
 
   override def update(op: PNCounterOp) =
