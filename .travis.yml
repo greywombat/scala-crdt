@@ -4,8 +4,8 @@ scala:
   - 2.11.12
 
 script:
-  - sbt -Xms2048M -Xmx2048M -Xss6M -XX:MaxPermSize=512M clean coverage test coverageReport
+  - sbt -Xms2048M -Xmx2048M -Xss6M clean coverage test coverageReport
 
 after_success:
-  - sbt -Xms2048M -Xmx2048M -Xss6M -XX:MaxPermSize=512M package
+  - sbt -Xms2048M -Xmx2048M -Xss6M package
   - bash <(curl -s https://codecov.io/bash)
