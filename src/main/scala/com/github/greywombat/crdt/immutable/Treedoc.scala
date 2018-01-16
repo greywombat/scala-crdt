@@ -1,6 +1,6 @@
 package com.github.greywombat.crdt.immutable
 
-import com.github.greywombat.crdt.UniqueId
+import com.github.greywombat.crdt.{NodeId, UniqueId}
 
 sealed trait Position
 
@@ -21,7 +21,7 @@ case class TreedocInsert[+T](id: UniqueId, pos: Position, value: T) extends Tree
 case class TreedocRemove(id: UniqueId) extends TreedocOp[Nothing]
 
 object Treedoc {
-  //def apply[T](value: Seq[T])(implicit nodeId: NodeId) = Treedoc.empty
+  def fromSeq[T](value: Seq[T]): Treedoc[T] = value.foldLeft(Treedoc.empty[T])(_ + _)
 
   def empty[T]: Treedoc[T] = Treedoc(TreedocState(Map.empty, Map.empty, Set.empty))
 
