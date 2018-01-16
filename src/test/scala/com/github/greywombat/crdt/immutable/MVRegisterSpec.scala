@@ -1,7 +1,7 @@
 package com.github.greywombat.crdt.immutable
 
 import com.github.greywombat.crdt.NodeId
-import org.scalacheck.{Arbitrary}
+import org.scalacheck.Arbitrary
 import org.scalacheck.ScalacheckShapeless._
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec, WordSpec}
@@ -60,7 +60,7 @@ class MVRegisterProps extends PropSpec with GeneratorDrivenPropertyChecks with M
 }
 
 class MVRegisterSpec extends WordSpec {
-  implicit val nodeId = NodeId("testnode")
+  implicit val nodeId: NodeId = NodeId("testnode")
 
   "A MVRegister" when {
     "empty" should {
@@ -68,7 +68,7 @@ class MVRegisterSpec extends WordSpec {
         assert(MVRegister.empty[Int].get == Set.empty[Int])
       }
       "allow to overwrite value" in {
-        assert((MVRegister.empty[Int].set(10)).get == Set(10))
+        assert(MVRegister.empty[Int].set(10).get == Set(10))
       }
     }
     "holding concurrent values" should {
@@ -77,7 +77,7 @@ class MVRegisterSpec extends WordSpec {
         assert(reg.get.size == 2)
       }
       "allow to overwrite values" in {
-        assert((reg.set(10)(NodeId("node1")).get == Set(10)))
+        assert(reg.set(10)(NodeId("node1")).get == Set(10))
       }
     }
   }

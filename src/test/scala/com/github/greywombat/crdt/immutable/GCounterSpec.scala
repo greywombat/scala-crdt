@@ -25,7 +25,7 @@ class GCounterProps extends OpCRDTProps[Int, GCounterOp, Map[NodeId, Int]](GCoun
 }
 
 class GCounterSpec extends WordSpec {
-  implicit val nodeId = NodeId("testnode")
+  implicit val nodeId: NodeId = NodeId("testnode")
 
   "A GCounter" when {
     "empty" should {

@@ -1,7 +1,7 @@
 package com.github.greywombat.crdt.immutable
 
 import com.github.greywombat.crdt.NodeId
-import org.scalacheck.{Arbitrary}
+import org.scalacheck.Arbitrary
 import org.scalacheck.ScalacheckShapeless._
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec, WordSpec}
@@ -20,9 +20,9 @@ class ORSetProps extends PropSpec with GeneratorDrivenPropertyChecks with Matche
   property("random interleaving of operation sequences yields equal result") {
     forAll { opSeq: List[(NodeId, List[(Boolean, Int)])] =>
       val opSeq1 = randomOpsInterleaving(opSeq)
-      val res1 = opSeq1.foldLeft(ORSet.empty[Int]) { case (crdt, (node, (add, value))) => if (add) crdt + value else crdt - value }
+      val res1 = opSeq1.foldLeft(ORSet.empty[Int]) { case (crdt, (_, (add, num))) => if (add) crdt + num else crdt - num }
       val opSeq2 = randomOpsInterleaving(opSeq)
-      val res2 = opSeq2.foldLeft(ORSet.empty[Int]) { case (crdt, (node, (add, value))) => if (add) crdt + value else crdt - value }
+      val res2 = opSeq2.foldLeft(ORSet.empty[Int]) { case (crdt, (_, (add, num))) => if (add) crdt + num else crdt - num }
       res1 should equal(res2)
     }
   }
@@ -30,8 +30,8 @@ class ORSetProps extends PropSpec with GeneratorDrivenPropertyChecks with Matche
   property("merge and update operations should converge to same result") {
     forAll { opSeq: List[(NodeId, List[(Boolean, Int)])] =>
       val opSeq1 = randomOpsInterleaving(opSeq)
-      val res1 = opSeq1.foldLeft(ORSet.empty[Int]) { case (crdt, (node, (add, value))) => if (add) crdt + value else crdt - value }
-      val res2 = opSeq1.foldLeft(ORSet.empty[Int]) { case (crdt, (node, (add, value))) => crdt.merge((if (add) crdt + value else crdt - value).state) }
+      val res1 = opSeq1.foldLeft(ORSet.empty[Int]) { case (crdt, (_, (add, num))) => if (add) crdt + num else crdt - num }
+      val res2 = opSeq1.foldLeft(ORSet.empty[Int]) { case (crdt, (_, (add, num))) => crdt.merge((if (add) crdt + num else crdt - num).state) }
       res1 should equal(res2)
     }
   }
@@ -50,7 +50,7 @@ class ORSetProps extends PropSpec with GeneratorDrivenPropertyChecks with Matche
 }
 
 class ORSetSpec extends WordSpec {
-  implicit val nodeId = NodeId("testnode")
+  implicit val nodeId: NodeId = NodeId("testnode")
 
   "An ORSet" when {
     "empty" should {
@@ -72,7 +72,7 @@ class ORSetSpec extends WordSpec {
         assert(ORSet.empty + 1 + 2 - 1 - 2 + 1 == Set(1))
       }
     }
-    "when merged" should {
+    "merged" should {
       "yield union of elements" in {
         assert((ORSet.empty + 1 + 2).merge((ORSet.empty + 1 + 3 - 1).state) == Set(1, 2, 3))
       }

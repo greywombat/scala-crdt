@@ -3,7 +3,7 @@ package com.github.greywombat.crdt.immutable
 import com.github.greywombat.crdt.NodeId
 
 object Helpers {
-  def randomOpsInterleaving[OpT](opSeqs: List[(NodeId, List[OpT])]) =
+  def randomOpsInterleaving[OpT](opSeqs: List[(NodeId, List[OpT])]): List[(NodeId, OpT)] =
     randomInterleaving(opSeqs.map { case (node, list) => list.map((node, _)) })
 
   def randomInterleaving[T](seqs: List[List[T]]): List[T] = {

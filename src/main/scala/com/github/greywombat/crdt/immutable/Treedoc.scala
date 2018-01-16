@@ -1,6 +1,6 @@
 package com.github.greywombat.crdt.immutable
 
-import com.github.greywombat.crdt.{NodeId, UniqueId}
+import com.github.greywombat.crdt.UniqueId
 
 sealed trait Position
 
@@ -65,11 +65,11 @@ case class Treedoc[T](state: TreedocState[T]) extends ImmutableCRDT[Seq[T], Tree
 
   override def iterator: Iterator[T] = traverse(Start()).map(_.value).iterator
 
-  override def canEqual(a: Any) = super.canEqual(a)
+  override def canEqual(a: Any): Boolean = super.canEqual(a)
 
-  override def equals(that: Any) = super.equals(that)
+  override def equals(that: Any): Boolean = super.equals(that)
 
-  def +(a: T) =
+  def +(a: T): Treedoc[T] =
     update(TreedocInsert(UniqueId(), traverse(Start()).lastOption.map(_.id).map(Following).getOrElse(Start()), a))
 
   def insert(idx: Int, value: T): Treedoc[T] = {
@@ -78,7 +78,7 @@ case class Treedoc[T](state: TreedocState[T]) extends ImmutableCRDT[Seq[T], Tree
       else if (idx < 0) throw new IndexOutOfBoundsException
       else traverse(Start()).drop(idx - 1).headOption.map(_.id).map(Following)
     insertPos match {
-      case Some(insertPos) => update(TreedocInsert(UniqueId(), insertPos, value))
+      case Some(pos) => update(TreedocInsert(UniqueId(), pos, value))
       case None => throw new IndexOutOfBoundsException
     }
   }
