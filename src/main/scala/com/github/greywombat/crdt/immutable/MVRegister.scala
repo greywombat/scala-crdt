@@ -9,7 +9,7 @@ object MVRegister {
 
   def empty[T] = new MVRegister[T](Set.empty[MVRegisterOp[T]])
 
-  def combine[T](x: ImmutableCRDT[Set[T], MVRegisterOp[T], Set[MVRegisterOp[T]]], y: ImmutableCRDT[Set[T], MVRegisterOp[T], Set[MVRegisterOp[T]]]): ImmutableCRDT[Set[T], MVRegisterOp[T], Set[MVRegisterOp[T]]] =
+  def combine[T](x: ImmutableCRDT[Set[T], MVRegisterOp[T], Set[MVRegisterOp[T]]], y: ImmutableCRDT[Set[T], MVRegisterOp[T], Set[MVRegisterOp[T]]]): MVRegister[T] =
     new MVRegister(x.state.filterNot { case MVRegisterOp(xv, _) => y.state.exists(_.version > xv) }
       ++ y.state.filterNot { case MVRegisterOp(yv, _) => x.state.exists(_.version > yv) })
 }
@@ -26,7 +26,7 @@ case class MVRegister[T](state: Set[MVRegisterOp[T]]) extends ImmutableCRDT[Set[
 
   override def get: Set[T] = state.map(_.value)
 
-  override def merge(other: Set[MVRegisterOp[T]]) =
+  override def merge(other: Set[MVRegisterOp[T]]): MVRegister[T] =
     MVRegister.combine(this, new MVRegister(other))
 
   def set(value: T)(implicit node: NodeId) =

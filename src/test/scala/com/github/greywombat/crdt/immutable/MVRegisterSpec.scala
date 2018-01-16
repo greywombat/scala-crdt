@@ -24,6 +24,28 @@ class MVRegisterProps extends PropSpec with GeneratorDrivenPropertyChecks with M
     }
   }
 
+  /*property("merge and update operations should converge to same result") {
+    forAll { opSeq: List[(NodeId, List[Int])] =>
+      if(opSeq.size == opSeq.map(_._1).toSet.size) {
+        //val opSeq1 = randomOpsInterleaving(opSeq)
+        val opSeq1 = opSeq.map { case (node, list) => list.map((node, _)) }.flatten
+        val res1 = opSeq1.foldLeft(MVRegister.empty[Int]) { case (crdt, (node, op)) => crdt.set(op)(node) }
+        val res2 = opSeq.map { case (node, ops) => ops.foldLeft(MVRegister.empty[Int]) { case (crdt, op) => crdt.set(op)(node) } }
+          .foldLeft(MVRegister.empty[Int]) { case (agg, crdt) => agg.merge(crdt.state) }
+        res1 should equal(res2)
+      }
+    }
+  }*/
+
+  property("merge and update operations should converge to same result") {
+    forAll { opSeq: List[(NodeId, List[Int])] =>
+      val opSeq1 = randomOpsInterleaving(opSeq)
+      val res1 = opSeq1.foldLeft(MVRegister.empty[Int]) { case (crdt, (node, op)) => crdt.set(op)(node) }
+      val res2 = opSeq1.foldLeft(MVRegister.empty[Int]) { case (crdt, (node, op)) => crdt.merge(crdt.set(op)(node).state) }
+      res1 should equal(res2)
+    }
+  }
+
   property("merge operation is commutative and converges") {
     forAll { (state1: Set[MVRegisterOp[Int]], state2: Set[MVRegisterOp[Int]]) =>
       new MVRegister(state1).merge(state2) should equal(new MVRegister(state2).merge(state1))

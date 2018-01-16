@@ -17,4 +17,6 @@ object UniqueId {
   def apply(): UniqueId = apply(UUID.randomUUID().toString)
 }
 
-case class UniqueId(uuid: String)
+case class UniqueId(uuid: String) extends Ordered[UniqueId] {
+  override def compare(that: UniqueId): Int = uuid.compare(that.uuid)
+}

@@ -27,6 +27,15 @@ class ORSetProps extends PropSpec with GeneratorDrivenPropertyChecks with Matche
     }
   }
 
+  property("merge and update operations should converge to same result") {
+    forAll { opSeq: List[(NodeId, List[(Boolean, Int)])] =>
+      val opSeq1 = randomOpsInterleaving(opSeq)
+      val res1 = opSeq1.foldLeft(ORSet.empty[Int]) { case (crdt, (node, (add, value))) => if (add) crdt + value else crdt - value }
+      val res2 = opSeq1.foldLeft(ORSet.empty[Int]) { case (crdt, (node, (add, value))) => crdt.merge((if (add) crdt + value else crdt - value).state) }
+      res1 should equal(res2)
+    }
+  }
+
   property("merge operation is commutative and converges") {
     forAll { (state1: ORSetState[Int], state2: ORSetState[Int]) =>
       ORSet(state1).merge(state2) should equal(ORSet(state2).merge(state1))
@@ -61,6 +70,11 @@ class ORSetSpec extends WordSpec {
       }
       "allow to add and remove values multiple times" in {
         assert(ORSet.empty + 1 + 2 - 1 - 2 + 1 == Set(1))
+      }
+    }
+    "when merged" should {
+      "yield union of elements" in {
+        assert((ORSet.empty + 1 + 2).merge((ORSet.empty + 1 + 3 - 1).state) == Set(1, 2, 3))
       }
     }
   }
